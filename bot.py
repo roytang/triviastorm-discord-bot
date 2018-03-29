@@ -29,7 +29,7 @@ current_qs = {}
 import asyncio
 
 async def status_task(q, channel):
-    await asyncio.sleep(10)
+    await asyncio.sleep(30)
     if channel.id in current_qs and current_qs[channel.id] == q:
         del current_qs[channel.id]
         await client.send_message(channel, "Time's up! Nobody got the answer!")
