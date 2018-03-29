@@ -56,7 +56,7 @@ async def on_message(message):
             em.set_image(url=q['attachment'])
             
         await client.send_message(message.channel, msg, embed=em)
-        client.loop.create_task(status_task(message.channel))
+        client.loop.create_task(status_task(q['id'], message.channel))
 
     else:
         if message.channel.id in current_qs:
