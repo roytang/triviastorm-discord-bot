@@ -24,6 +24,14 @@ def checkanswer(q, text):
         data = json.loads(url.read().decode())
         return data['correct']
 
+def getanswer(q):
+    import urllib.request, json, urllib.parse
+    target = "http://triviastorm.net/api/getanswer/%s/" % (q)
+    print(target)
+    with urllib.request.urlopen(target) as url:
+        data = json.loads(url.read().decode())
+        return data['answers']
+
 current_qs = {}            
 
 import asyncio
@@ -32,7 +40,8 @@ async def status_task(q, channel):
     await asyncio.sleep(30)
     if channel.id in current_qs and current_qs[channel.id] == q:
         del current_qs[channel.id]
-        await client.send_message(channel, "Time's up! Nobody got the answer!")
+        answers = ";".join(getanswer(q))
+        await client.send_message(channel, "Time's up! Nobody got the answer! Acceptable answers: " % (answers))
 
 @client.event
 async def on_message(message):
