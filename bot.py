@@ -41,7 +41,8 @@ async def status_task(q, channel):
     if channel.id in current_qs and current_qs[channel.id] == q:
         del current_qs[channel.id]
         answers = ";".join(getanswer(q))
-        await client.send_message(channel, "Time's up! Nobody got the answer! Acceptable answers: " % (answers))
+        #print(answers)
+        await client.send_message(channel, "Time's up! Nobody got the answer! Acceptable answers: %s" % (answers))
 
 @client.event
 async def on_message(message):
