@@ -75,5 +75,6 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
+print("Starting client")
 client.run(TOKEN)
 
