@@ -58,7 +58,7 @@ async def on_message(message):
 
     if message.content.startswith('!q'):
         q = getq()
-        msg = q['text']
+        msg = "Q: " + q['text']
         current_qs[message.channel.id] = q['id']
         em = None
         if len(q['attachment']) > 0:
