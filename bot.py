@@ -10,9 +10,12 @@ def dump(obj):
        if hasattr( obj, attr ):
            print( "obj.%s = %s" % (attr, getattr(obj, attr)))
 
-def getq():
+def getq(tag):
     import urllib.request, json 
-    with urllib.request.urlopen("http://triviastorm.net/api/getq/") as url:
+    target = "http://triviastorm.net/api/getq/"
+    if len(tag) > 0:
+        target = target + "?tag="+tag
+    with urllib.request.urlopen(target) as url:
         data = json.loads(url.read().decode())
         return data
 
@@ -57,7 +60,16 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
 
     if message.content.startswith('!q'):
-        q = getq()
+        params = message.content.split()
+        tag = ""
+        if len(params) > 1:
+            tag = params[1]
+        try:
+            q = getq(tag)
+        except:
+            print("Failed getting a q with tag %s" % (tag))
+            await client.send_message(message.channel, "Couldn't retrieve a question. Your parameters might be invalid.")
+            return
         msg = "Q#%s: %s" % (q['id'], q['text'])
         current_qs[message.channel.id] = q['id']
         em = None
