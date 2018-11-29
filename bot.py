@@ -1,6 +1,9 @@
 # https://github.com/Rapptz/discord.py/blob/async/examples/reply.py
 import discord
 import os
+import requests, json
+import urllib.request, json, urllib.parse
+
 
 # high five for security
 # apparently discord knows if i put my token up on github
@@ -23,17 +26,13 @@ def getq(tag):
         return data
 
 def checkanswer(q, text):
-    import urllib.request, json, urllib.parse
-    print(text)
-    print(urllib.parse.quote(text))
-    target = "http://triviastorm.net/api/checkanswer/%s/?ans=%s" % (q, urllib.parse.quote(text))
-    print(target)
-    with urllib.request.urlopen(target) as url:
-        data = json.loads(url.read().decode())
-        return data['correct']
+    payload = { "ans" : text}
+    target = "http://triviastorm.net/api/checkanswer/%s/" % (q)
+    r = requests.get(target, params=payload)
+    data = r.json()
+    return data['correct']
 
 def getanswer(q):
-    import urllib.request, json, urllib.parse
     target = "http://triviastorm.net/api/getanswer/%s/" % (q)
     print(target)
     with urllib.request.urlopen(target) as url:
@@ -170,6 +169,7 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-print("Starting client")
-client.run(TOKEN)
+if __name__ == '__main__':
+    print("Starting client")
+    client.run(TOKEN)
 
