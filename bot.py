@@ -24,7 +24,7 @@ def getq(tag):
 
 def checkanswer(q, text):
     import urllib.request, json, urllib.parse
-    target = "http://triviastorm.net/api/checkanswer/%s/?ans=%s" % (q, urllib.parse.quote(text))
+    target = "http://triviastorm.net/api/checkanswer/%s/?ans=%s" % (q, text)
     print(target)
     with urllib.request.urlopen(target) as url:
         data = json.loads(url.read().decode())
