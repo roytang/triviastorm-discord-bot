@@ -3,7 +3,7 @@ import discord
 import os
 import requests, json
 import urllib.request, json, urllib.parse
-
+import binascii
 
 # high five for security
 # apparently discord knows if i put my token up on github
@@ -26,7 +26,8 @@ def getq(tag):
         return data
 
 def checkanswer(q, text):
-    payload = { "ans" : text}
+    text = binascii.hexlify(text.encode()).decode()
+    payload = { "anshex" : text}
     target = "http://triviastorm.net/api/checkanswer/%s/" % (q)
     r = requests.get(target, params=payload)
     data = r.json()
