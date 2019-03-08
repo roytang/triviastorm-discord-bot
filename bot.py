@@ -158,6 +158,8 @@ async def on_message(message):
             if checkanswer(q, text):
                 del current_qs[message.channel.id]
                 msg = '{0.author.mention} is correct!'.format(message)
+                answers = ";".join(getanswer(q))
+                msg = msg + " Acceptable answers: " + answers
                 await client.send_message(message.channel, msg)
                 await afterendq(message.channel)
                 
