@@ -60,7 +60,7 @@ async def endq(channel, q=None):
     del current_qs[channel.id]
     answers = ";".join(getanswer(q))
     #print(answers)
-    await client.send_message(channel, "Time's up! Nobody got the answer! Acceptable answers: %s" % (answers))
+    await client.send_message(channel, "Time's up! Nobody got the answer! Acceptable answers: **%s**" % (answers))
     await afterendq(channel)
 
 async def sendq(channel, tag):
@@ -72,7 +72,7 @@ async def sendq(channel, tag):
         await client.send_message(channel, "Couldn't retrieve a question. Your parameters might be invalid. If there was a trivia run, it will be terminated.")
         channel_settings[channel.id]['qcount'] = 0
         return
-    msg = "Q#%s: %s" % (q['id'], q['text'])
+    msg = "**Q#%s: %s**" % (q['id'], q['text'])
     current_qs[channel.id] = q['id']
     current_hints[channel.id] = q['hint']
     em = None
@@ -167,7 +167,7 @@ async def on_message(message):
                 del current_qs[message.channel.id]
                 msg = '{0.author.mention} is correct!'.format(message)
                 answers = ";".join(getanswer(q))
-                msg = msg + " Acceptable answers: " + answers
+                msg = msg + " Acceptable answers: **" + answers + "**"
                 await client.send_message(message.channel, msg)
                 await afterendq(message.channel)
                 
