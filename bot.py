@@ -124,7 +124,7 @@ async def on_message(message):
 
     if message.content.startswith('!hint'):
         if message.channel.id in current_qs:
-            await client.send_message(message.channel, "Hint: " + current_hints[message.channel.id])
+            await client.send_message(message.channel, "Hint: `" + current_hints[message.channel.id] + "`")
         else:
             await client.send_message(message.channel, "Hint for what?")
 
