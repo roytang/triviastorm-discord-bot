@@ -41,6 +41,7 @@ def getanswer(q):
         return data['answers']
 
 current_qs = {}            
+current_hints = {}
 channel_settings = {}
 
 import asyncio
@@ -73,6 +74,7 @@ async def sendq(channel, tag):
         return
     msg = "Q#%s: %s" % (q['id'], q['text'])
     current_qs[channel.id] = q['id']
+    current_hints[channel.id] = q['hint']
     em = None
     if len(q['attachment']) > 0:
         em = discord.Embed()
@@ -119,7 +121,13 @@ async def on_message(message):
             channel_settings[message.channel.id]['qcount'] = 0
         msg = 'Current channel settings: Tag=%s QCount=%d' % (channel_settings[message.channel.id]['tag'], channel_settings[message.channel.id]['qcount'])
         await client.send_message(message.channel, msg)
-        
+
+    if message.content.startswith('!hint'):
+        if message.channel.id in current_qs:
+            await client.send_message(message.channel, "Hint: " + current_hints[message.channel.id])
+        else:
+            await client.send_message(message.channel, "Hint for what?")
+
     if message.content.startswith('!q'):
 
         if message.channel.id in current_qs:
