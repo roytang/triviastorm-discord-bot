@@ -4,6 +4,7 @@ import os
 import requests, json
 import urllib.request, json, urllib.parse
 import binascii
+from apiclient import ApiClient
 
 # high five for security
 # apparently discord knows if i put my token up on github
@@ -11,34 +12,12 @@ TOKEN = os.environ['triviastorm.token']
 
 client = discord.Client()
 
+api = ApiClient()
+
 def dump(obj):
    for attr in dir(obj):
        if hasattr( obj, attr ):
            print( "obj.%s = %s" % (attr, getattr(obj, attr)))
-
-def getq(tag):
-    import urllib.request, json 
-    target = "http://triviastorm.net/api/getq/"
-    if len(tag) > 0:
-        target = target + "?tag="+tag
-    with urllib.request.urlopen(target) as url:
-        data = json.loads(url.read().decode())
-        return data
-
-def checkanswer(q, text):
-    text = binascii.hexlify(text.encode()).decode()
-    payload = { "anshex" : text}
-    target = "http://triviastorm.net/api/checkanswer/%s/" % (q)
-    r = requests.get(target, params=payload)
-    data = r.json()
-    return data['correct']
-
-def getanswer(q):
-    target = "http://triviastorm.net/api/getanswer/%s/" % (q)
-    print(target)
-    with urllib.request.urlopen(target) as url:
-        data = json.loads(url.read().decode())
-        return data['answers']
 
 current_qs = {}            
 current_hints = {}
@@ -58,7 +37,7 @@ async def endq(channel, q=None):
     if q is None:
         q = current_qs[channel.id]
     del current_qs[channel.id]
-    answers = ";".join(getanswer(q))
+    answers = ";".join(api.getanswer(q))
     #print(answers)
     await client.send_message(channel, "Time's up! Nobody got the answer! Acceptable answers: **%s**" % (answers))
     await afterendq(channel)
@@ -66,7 +45,7 @@ async def endq(channel, q=None):
 async def sendq(channel, tag):
     # print("sendq")
     try:
-        q = getq(tag)
+        q = api.getq(tag)
     except:
         print("Failed getting a q with tag %s" % (tag))
         await client.send_message(channel, "Couldn't retrieve a question. Your parameters might be invalid. If there was a trivia run, it will be terminated.")
@@ -163,10 +142,10 @@ async def on_message(message):
         if message.channel.id in current_qs:
             q = current_qs[message.channel.id]
             text = message.content
-            if checkanswer(q, text):
+            if api.checkanswer(q, text):
                 del current_qs[message.channel.id]
                 msg = '{0.author.mention} is correct!'.format(message)
-                answers = ";".join(getanswer(q))
+                answers = ";".join(api.getanswer(q))
                 msg = msg + " Acceptable answers: **" + answers + "**"
                 await client.send_message(message.channel, msg)
                 await afterendq(message.channel)
