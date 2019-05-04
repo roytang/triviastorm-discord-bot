@@ -5,6 +5,8 @@ import binascii
 API_TOKEN = os.environ['triviastorm.api_token']
 API_ROOT = "https://triviastorm.net/api/v2/"
 
+print("triviastorm.api_token="+API_TOKEN)
+
 class ApiClient():
 
     def __init__(self, channel_id, api_root=API_ROOT, token=API_TOKEN):
