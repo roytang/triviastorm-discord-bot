@@ -5,14 +5,42 @@ import binascii
 API_TOKEN = '' # os.environ['triviastorm.api_token']
 API_ROOT = "https://triviastorm.net/api/v2/"
 
+API_ROOT="http://localhost:8000/api/v2/"
+API_TOKEN="6467774568a314bfd9af63caeb74546abe6fa2c3"
+
 class ApiClient():
 
-    def get(self, endpoint, payload={}):
-        target = API_ROOT + endpoint
+    def __init__(self, channel_id, api_root=API_ROOT, token=API_TOKEN):
+        self.channel_id = channel_id
+        self.api_root = api_root
+        self.headers = { 'Authorization': 'Token %s' % token }
 
-        r = requests.get(target, params=payload)
+    def get(self, endpoint, payload={}):
+        target = self.api_root + endpoint
+        r = requests.get(target, params=payload, headers=self.headers)
         data = r.json()
         return data
+
+    def post(self, endpoint, payload={}):
+        target = self.api_root + endpoint
+        payload['channel_id'] = self.channel_id
+        r = requests.post(target, data=payload, headers=self.headers)
+        data = r.json()
+        return data
+
+    def askq(self, tag=''):
+        return self.post("questions/ask/", { "tag": tag })
+
+    def endq(self):
+        return self.post("questions/end/")
+
+    def submitanswer(self, q, text, sender):
+        text = binascii.hexlify(text.encode()).decode()
+        payload = { "anshex" : text, "sender": sender }
+        return self.post("questions/%s/submit/" % (q), payload)['correct']
+
+    def scores(self):
+        return self.post("questions/scores/")
 
     def getq(self, tag=''):
         return self.get("questions/get/", { "tag": tag })

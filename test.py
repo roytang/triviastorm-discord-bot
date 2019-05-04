@@ -12,12 +12,17 @@
 
 from apiclient import ApiClient
 
-c = ApiClient()
+c = ApiClient("test", api_root="http://localhost:8000/api/v2/", token="6467774568a314bfd9af63caeb74546abe6fa2c3")
 
-print(c.getq())
-print(c.getq("flags"))
+# print(c.getq())
+# print(c.getq("movies"))
 
-print(c.checkanswer(16546, "parkour"))
-print(c.checkanswer(16546, "notparkour"))
+# print(c.checkanswer(5344, "groundhog day"))
+# print(c.checkanswer(5344, "ghostbusters"))
 
-print(c.getanswer(16546))
+# print(c.getanswer(5344))
+
+q = c.askq("test4")
+print(q)
+print(c.submitanswer(q["id"], "simon pegg", "myusername22"))
+print(c.endq())
