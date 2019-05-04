@@ -27,10 +27,10 @@ class TriviaBot():
         self.current_q = None
         self.qcount = 0
         self.tag = None
-        self.api = ApiClient("test")
+        self.api = ApiClient(channel.id)
 
     async def endq(self, q=None):
-        print("endq")
+        # print("endq")
         if q is None:
             q = self.current_q
         self.current_q = None
@@ -40,9 +40,9 @@ class TriviaBot():
         await self.afterendq()
 
     async def sendq(self, tag=None):
-        print("sendq")
+        # print("sendq")
         try:
-            q = self.api.getq(tag)
+            q = self.api.askq(tag)
         except:
             print("Failed getting a q with tag %s" % (tag))
             await client.send_message(self.channel, "Couldn't retrieve a question. Your parameters might be invalid. If there was a trivia run, it will be terminated.")
@@ -62,11 +62,42 @@ class TriviaBot():
         client.loop.create_task(status_task(self, q['id']))
 
     async def afterendq(self):
-        print("afterendq")
+        # print("afterendq")
         self.qcount = self.qcount - 1
         if self.qcount > 0:
             await client.send_message(self.channel, "%d question(s) remaining in this run. Next question!" % (self.qcount))
             await self.sendq(self.tag)
+        else:
+            self.api.endq()
+
+    def format_scores(self, raw_scores):
+        scores = []
+        for key in raw_scores:
+            score = raw_scores[key]
+            scores.append("%s : %s" % (key, score))
+        return ", ".join(scores)
+
+    async def checkanswer(self, message):
+        text = message.content
+        sender = message.author.name
+        if self.current_q is not None:
+            resp = self.api.submitanswer(self.current_q, text, sender)
+            if resp['correct']:
+                # correct submission ends the currernt_q
+                self.current_q = None
+                msg = '{0.author.mention} is correct!'.format(message)
+                answers = ";".join(resp['answers'])
+                msg = msg + " Acceptable answers: **" + answers + "**"
+                await client.send_message(self.channel, msg)
+                msg = "Current scores: %s" % (self.format_scores(resp['scores']))
+                await client.send_message(self.channel, msg)
+                await self.afterendq()
+            # else do nothing on incorrect answer
+    
+    async def scores(self):
+        resp = self.api.scores()
+        msg = "Current scores: %s" % (self.format_scores(resp))
+        await client.send_message(self.channel, msg)
 
 
 bots = {}
@@ -81,7 +112,7 @@ def get_bot(channel_id):
 import asyncio
 
 async def status_task(bot, q):
-    print("status_task")
+    # print("status_task")
     await asyncio.sleep(TIME_LIMIT)
     if bot.current_q == q:
         await bot.endq(q)
@@ -98,6 +129,9 @@ async def on_message(message):
 
     if message.content.startswith('!pass'):
         await bot.endq()
+
+    if message.content.startswith('!scores'):
+        await bot.scores()
 
     if message.content.startswith('!stop'):
         qcount = bot.qcount
@@ -146,16 +180,7 @@ async def on_message(message):
 
     # all other messages to be treated as potential answers
     else:
-        if bot.current_q is not None:
-            q = bot.current_q
-            text = message.content
-            if bot.api.checkanswer(q, text):
-                bot.current_q = None
-                msg = '{0.author.mention} is correct!'.format(message)
-                answers = ";".join(bot.api.getanswer(q))
-                msg = msg + " Acceptable answers: **" + answers + "**"
-                await client.send_message(message.channel, msg)
-                await bot.afterendq()
+        await bot.checkanswer(message)
 
 @client.event
 async def on_ready():

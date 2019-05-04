@@ -2,11 +2,8 @@ import os
 import requests
 import binascii
 
-API_TOKEN = '' # os.environ['triviastorm.api_token']
+API_TOKEN = os.environ['triviastorm.api_token']
 API_ROOT = "https://triviastorm.net/api/v2/"
-
-API_ROOT="http://localhost:8000/api/v2/"
-API_TOKEN="6467774568a314bfd9af63caeb74546abe6fa2c3"
 
 class ApiClient():
 
@@ -37,7 +34,7 @@ class ApiClient():
     def submitanswer(self, q, text, sender):
         text = binascii.hexlify(text.encode()).decode()
         payload = { "anshex" : text, "sender": sender }
-        return self.post("questions/%s/submit/" % (q), payload)['correct']
+        return self.post("questions/%s/submit/" % (q), payload)
 
     def scores(self):
         return self.post("questions/scores/")
