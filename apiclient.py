@@ -13,8 +13,6 @@ class ApiClient():
         self.channel_id = channel_id
         self.api_root = api_root
         self.headers = { 'Authorization': 'Token %s' % token }
-        print("Created ApiClient")
-        print(self.headers)
 
     def get(self, endpoint, payload={}):
         target = self.api_root + endpoint

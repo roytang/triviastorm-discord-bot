@@ -72,9 +72,8 @@ class TriviaBot():
 
     def format_scores(self, raw_scores):
         scores = []
-        for key in raw_scores:
-            score = raw_scores[key]
-            scores.append("%s : %s" % (key, score))
+        for score in raw_scores:
+            scores.append("%s : %s" % (score['name'], score['score']))
         return ", ".join(scores)
 
     async def checkanswer(self, message):

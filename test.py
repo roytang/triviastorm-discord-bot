@@ -12,7 +12,7 @@
 
 from apiclient import ApiClient
 
-c = ApiClient("test", api_root="http://localhost:8000/api/v2/", token="6467774568a314bfd9af63caeb74546abe6fa2c3")
+c = ApiClient("test", token="59d6e8551296d27034a65a05c44c82a2ddb0fc05")
 
 # print(c.getq())
 # print(c.getq("movies"))
