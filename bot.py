@@ -11,7 +11,7 @@ from apiclient import ApiClient
 TOKEN = os.environ['triviastorm.token']
 
 # time for qs to be answered
-TIME_LIMIT = 30
+TIME_LIMIT = 60
 
 client = discord.Client()
 
