@@ -34,6 +34,7 @@ class TriviaBot():
         # print("endq")
         if q is None:
             q = self.current_q
+        self.last_q = self.current_q
         self.current_q = None
         answers = ";".join(self.api.getanswer(q))
         print(answers)
@@ -65,7 +66,6 @@ class TriviaBot():
     async def afterendq(self):
         # print("afterendq")
         self.qcount = self.qcount - 1
-        self.last_q = self.current_q
         if self.qcount > 0:
             await client.send_message(self.channel, "%d question(s) remaining in this run. Next question!" % (self.qcount))
             await self.sendq(self.tag)
@@ -85,6 +85,7 @@ class TriviaBot():
             resp = self.api.submitanswer(self.current_q, text, sender)
             if resp['correct']:
                 # correct submission ends the currernt_q
+                self.last_q = self.current_q
                 self.current_q = None
                 msg = '{0.author.mention} is correct!'.format(message)
                 answers = ";".join(resp['answers'])
