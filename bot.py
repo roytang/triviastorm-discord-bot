@@ -25,6 +25,7 @@ class TriviaBot():
     def __init__(self, channel):
         self.channel = channel
         self.current_q = None
+        self.last_q = None
         self.qcount = 0
         self.tag = None
         self.api = ApiClient(channel.id)
@@ -64,6 +65,7 @@ class TriviaBot():
     async def afterendq(self):
         # print("afterendq")
         self.qcount = self.qcount - 1
+        self.last_q = self.current_q
         if self.qcount > 0:
             await client.send_message(self.channel, "%d question(s) remaining in this run. Next question!" % (self.qcount))
             await self.sendq(self.tag)
@@ -92,6 +94,14 @@ class TriviaBot():
                 await client.send_message(self.channel, msg)
                 await self.afterendq()
             # else do nothing on incorrect answer
+
+    async def report(self, message):
+        text = message.content
+        sender = message.author.name
+        if self.last_q is not None:
+            resp = self.api.report(self.last_q, text, sender)
+            msg = "Report submitted for #{0}, thanks for the feedback!".format(self.last_q)
+            await client.send_message(self.channel, msg)
     
     async def scores(self):
         resp = self.api.scores()
@@ -176,6 +186,9 @@ async def on_message(message):
         bot.tag = tag
         bot.qcount = qcount
         await bot.sendq(tag)
+
+    if message.content.startswith('!report '):
+        await bot.report(message)
 
     # all other messages to be treated as potential answers
     else:

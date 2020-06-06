@@ -38,6 +38,11 @@ class ApiClient():
         payload = { "anshex" : text, "sender": sender }
         return self.post("questions/%s/submit/" % (q), payload)
 
+    def report(self, q, text, sender):
+        text = binascii.hexlify(text.encode()).decode()
+        payload = { "feedbackhex" : text, "sender": sender }
+        return self.post("questions/%s/report/" % (q), payload)
+
     def scores(self):
         return self.post("questions/scores/")
 
