@@ -50,8 +50,9 @@ class ApiClient():
     def report(self, q, text, sender):
         qq = q
         tokens = text.split(" ")
-        if len(tokens) > 0:
-            t1 = tokens[0].replace("#", "")
+        # check if 2nd token is a question id
+        if len(tokens) > 1:
+            t1 = tokens[1].replace("#", "")
             if is_number(t1):
                 qq = t1
         text = binascii.hexlify(text.encode()).decode()
