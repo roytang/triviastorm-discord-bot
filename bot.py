@@ -20,6 +20,11 @@ def dump(obj):
        if hasattr( obj, attr ):
            print( "obj.%s = %s" % (attr, getattr(obj, attr)))
 
+
+def is_number(s):
+    """ Returns True if string is a number. """
+    return s.replace(',','').replace('.','',1).isdigit()    
+    
 class TriviaBot():
 
     def __init__(self, channel):
