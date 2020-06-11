@@ -99,9 +99,29 @@ class TriviaBot():
     async def report(self, message):
         text = message.content
         sender = message.author.name
-        if self.last_q is not None:
-            resp = self.api.report(self.last_q, text, sender)
-            msg = "Report submitted for #{0}, thanks for the feedback!".format(self.last_q)
+        qq = None
+
+        tokens = text.split(" ")
+        # check if 2nd token is a question id
+        if len(tokens) > 1:
+            t1 = tokens[1].replace("#", "")
+            if is_number(t1):
+                qq = t1        
+        
+        if qq is not None:
+            # if no id specified, use last_q
+            qq = self.last_q 
+
+        if qq is not None:
+            try:
+                resp = self.api.report(qq, text, sender)
+                msg = "Report submitted for #{0}, thanks for the feedback!".format(qq)
+                await client.send_message(self.channel, msg)
+            except:
+                msg = "Error reporting feedback. You may have provided an invalid id.`"
+                await client.send_message(self.channel, msg)
+        else:
+            msg = "You can specify a question to report by passing the question id: `!report 1234 this question is great!`"
             await client.send_message(self.channel, msg)
     
     async def scores(self):
