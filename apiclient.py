@@ -21,6 +21,13 @@ class ApiClient():
     def get(self, endpoint, payload={}):
         target = self.api_root + endpoint
         r = requests.get(target, params=payload, headers=self.headers)
+        data = r.json()
+        return data
+
+    def post(self, endpoint, payload={}):
+        target = self.api_root + endpoint
+        payload['channel_id'] = self.channel_id
+        r = requests.post(target, data=payload, headers=self.headers)
         if r.status_code == 200:
             data = r.json()
             return data
@@ -28,13 +35,6 @@ class ApiClient():
             return {
                 "error": r.status_code
             }
-
-    def post(self, endpoint, payload={}):
-        target = self.api_root + endpoint
-        payload['channel_id'] = self.channel_id
-        r = requests.post(target, data=payload, headers=self.headers)
-        data = r.json()
-        return data
 
     def askq(self, tag=''):
         return self.post("questions/ask/", { "tag": tag })
