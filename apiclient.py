@@ -21,8 +21,13 @@ class ApiClient():
     def get(self, endpoint, payload={}):
         target = self.api_root + endpoint
         r = requests.get(target, params=payload, headers=self.headers)
-        data = r.json()
-        return data
+        if r.status_code == 200:
+            data = r.json()
+            return data
+        else:
+            return {
+                "error": r.status_code
+            }
 
     def post(self, endpoint, payload={}):
         target = self.api_root + endpoint
