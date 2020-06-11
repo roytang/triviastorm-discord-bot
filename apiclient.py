@@ -23,11 +23,7 @@ class ApiClient():
     def post(self, endpoint, payload={}):
         target = self.api_root + endpoint
         payload['channel_id'] = self.channel_id
-        print("payload", payload)
         r = requests.post(target, data=payload, headers=self.headers)
-        print("##### Response follows")
-        print(r.text)
-        print("##### End ")
         data = r.json()
         return data
 

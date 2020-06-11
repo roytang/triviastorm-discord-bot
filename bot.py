@@ -24,7 +24,7 @@ def dump(obj):
 def is_number(s):
     """ Returns True if string is a number. """
     return s.replace(',','').replace('.','',1).isdigit()    
-    
+
 class TriviaBot():
 
     def __init__(self, channel):
@@ -112,11 +112,13 @@ class TriviaBot():
             t1 = tokens[1].replace("#", "")
             if is_number(t1):
                 qq = t1        
+        print("qq from token", qq)
         
         if qq is not None:
             # if no id specified, use last_q
             qq = self.last_q 
-
+        print("qq from last_q", qq)
+        
         if qq is not None:
             try:
                 resp = self.api.report(qq, text, sender)
