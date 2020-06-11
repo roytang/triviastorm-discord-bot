@@ -105,8 +105,9 @@ class TriviaBot():
         text = message.content
         sender = message.author.name
         qq = None
-
+        print("test", tokens)
         tokens = text.split(" ")
+        print("tokens", tokens)
         # check if 2nd token is a question id
         if len(tokens) > 1:
             t1 = tokens[1].replace("#", "")
@@ -114,11 +115,11 @@ class TriviaBot():
                 qq = t1        
         print("qq from token", qq)
         
-        if qq is not None:
+        if qq is None:
             # if no id specified, use last_q
             qq = self.last_q 
         print("qq from last_q", qq)
-        
+
         if qq is not None:
             try:
                 resp = self.api.report(qq, text, sender)
