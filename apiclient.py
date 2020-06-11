@@ -7,6 +7,10 @@ API_ROOT = "https://triviastorm.net/api/v2/"
 
 print("triviastorm.api_token="+API_TOKEN)
 
+def is_number(s):
+    """ Returns True if string is a number. """
+    return s.replace(',','').replace('.','',1).isdigit()   
+
 class ApiClient():
 
     def __init__(self, channel_id, api_root=API_ROOT, token=API_TOKEN):
@@ -39,9 +43,15 @@ class ApiClient():
         return self.post("questions/%s/submit/" % (q), payload)
 
     def report(self, q, text, sender):
+        qq = q
+        tokens = text.split(" ")
+        if len(tokens) > 0:
+            t1 = tokens[0].replace("#", "")
+            if is_number(t1):
+                qq = t1
         text = binascii.hexlify(text.encode()).decode()
         payload = { "feedbackhex" : text, "sender": sender }
-        return self.post("questions/%s/report/" % (q), payload)
+        return self.post("questions/%s/report/" % (qq), payload)
 
     def scores(self):
         return self.post("questions/scores/")
