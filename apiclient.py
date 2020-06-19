@@ -2,7 +2,11 @@ import os
 import requests
 import binascii
 
-API_TOKEN = os.environ['triviastorm.api_token']
+try:
+    API_TOKEN = os.environ['triviastorm.api_token']
+except:
+    API_TOKEN = os.environ['triviastorm_api_token']
+
 API_ROOT = "https://triviastorm.net/api/v2/"
 
 print("triviastorm.api_token="+API_TOKEN)

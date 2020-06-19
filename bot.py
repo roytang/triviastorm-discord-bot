@@ -8,7 +8,10 @@ from apiclient import ApiClient
 
 # high five for security
 # apparently discord knows if i put my token up on github
-TOKEN = os.environ['triviastorm.token']
+try:
+    TOKEN = os.environ['triviastorm.token']
+except:
+    TOKEN = os.environ['triviastorm_token']
 
 # time for qs to be answered
 TIME_LIMIT = 60
