@@ -8,6 +8,7 @@ except:
     API_TOKEN = os.environ['triviastorm_api_token']
 
 API_ROOT = "https://triviastorm.net/api/v2/"
+# API_ROOT = "http://localhost:8000/api/v2/"
 
 print("triviastorm.api_token="+API_TOKEN)
 
