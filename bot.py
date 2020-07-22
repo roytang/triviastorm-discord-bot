@@ -46,7 +46,7 @@ class TriviaBot():
         self.current_q = None
         answers = ";".join(self.api.getanswer(q))
         print(answers)
-        await client.send_message(self.channel, "Time's up! Nobody got the answer! Acceptable answers: **%s**" % (answers))
+        await self.channel.send("Time's up! Nobody got the answer! Acceptable answers: **%s**" % (answers))
         await self.afterendq()
 
     async def sendq(self, tag=None):
@@ -55,10 +55,11 @@ class TriviaBot():
             q = self.api.askq(tag)
         except:
             print("Failed getting a q with tag %s" % (tag))
-            await client.send_message(self.channel, "Couldn't retrieve a question. Your parameters might be invalid. If there was a trivia run, it will be terminated.")
+            await self.channel.send("Couldn't retrieve a question. Your parameters might be invalid. If there was a trivia run, it will be terminated.")
             self.qcount = 0
             return
 
+        print(q)
         msg = "**Q#%s: %s**" % (q['id'], q['text'])
         self.current_q = q['id']
         self.hint = q['hint']
@@ -67,7 +68,7 @@ class TriviaBot():
             em = discord.Embed()
             em.set_image(url=q['attachment'])
             
-        await client.send_message(self.channel, msg, embed=em)
+        await self.channel.send(msg, embed=em)
         # schedule a task to end this q after some time
         client.loop.create_task(status_task(self, q['id']))
 
@@ -75,7 +76,7 @@ class TriviaBot():
         # print("afterendq")
         self.qcount = self.qcount - 1
         if self.qcount > 0:
-            await client.send_message(self.channel, "%d question(s) remaining in this run. Next question!" % (self.qcount))
+            await self.channel.send("%d question(s) remaining in this run. Next question!" % (self.qcount))
             await self.sendq(self.tag)
         else:
             self.api.endq()
@@ -98,9 +99,9 @@ class TriviaBot():
                 msg = '{0.author.mention} is correct!'.format(message)
                 answers = ";".join(resp['answers'])
                 msg = msg + " Acceptable answers: **" + answers + "**"
-                await client.send_message(self.channel, msg)
+                await self.channel.send(msg)
                 msg = "Current scores: %s" % (self.format_scores(resp['scores']))
-                await client.send_message(self.channel, msg)
+                await self.channel.send(msg)
                 await self.afterendq()
             # else do nothing on incorrect answer
 
@@ -123,18 +124,18 @@ class TriviaBot():
             try:
                 resp = self.api.report(qq, text, sender)
                 msg = "Report submitted for #{0}, thanks for the feedback!".format(qq)
-                await client.send_message(self.channel, msg)
+                await self.channel.send(msg)
             except:
                 msg = "Error reporting feedback. You may have provided an invalid id.`"
-                await client.send_message(self.channel, msg)
+                await self.channel.send(msg)
         else:
             msg = "You can specify a question to report by passing the question id: `!report 1234 this question is great!`"
-            await client.send_message(self.channel, msg)
+            await self.channel.send(msg)
     
     async def scores(self):
         resp = self.api.scores()
         msg = "Current scores: %s" % (self.format_scores(resp))
-        await client.send_message(self.channel, msg)
+        await self.channel.send(msg)
 
 
 bots = {}
@@ -175,22 +176,22 @@ async def on_message(message):
         bot.qcount = 0
         await bot.endq()
         if qcount > 1:
-            await client.send_message(message.channel, "Trivia run ended prematurely")
+            await message.channel.send("Trivia run ended prematurely")
 
     if message.content.startswith('!channel'):
         msg = 'Current channel settings: Tag=%s QCount=%d' % (bot.tag, bot.qcount)
-        await client.send_message(message.channel, msg)
+        await message.channel.send(msg)
 
     if message.content.startswith('!hint'):
         if bot.current_q is None:
-            await client.send_message(message.channel, "Hint for what?")
+            await message.channel.send("Hint for what?")
         else:
-            await client.send_message(message.channel, "Hint: `%s`" % (bot.hint))
+            await message.channel.send("Hint: `%s`" % (bot.hint))
 
     if message.content.startswith('!q'):
 
         if bot.current_q is not None:
-            await client.send_message(message.channel, "There's already a q in this channel, !pass to immediately end a q")
+            await message.channel.send("There's already a q in this channel, !pass to immediately end a q")
             return
 
         # parameter parsing
@@ -208,8 +209,8 @@ async def on_message(message):
 
         if qcount > 1:
             if bot.qcount > 1:
-                await client.send_message(message.channel, "There is already an existing trivia run with %d question(s) remaining, !stop to stop" % (bot.qcount))    
-            await client.send_message(message.channel, "Starting trivia run with %d questions, !stop to stop" % (qcount))
+                await message.channel.send("There is already an existing trivia run with %d question(s) remaining, !stop to stop" % (bot.qcount))    
+            await message.channel.send("Starting trivia run with %d questions, !stop to stop" % (qcount))
 
         bot.tag = tag
         bot.qcount = qcount
