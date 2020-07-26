@@ -5,6 +5,7 @@ import requests, json
 import urllib.request, json, urllib.parse
 import binascii
 from apiclient import ApiClient
+import traceback
 
 # high five for security
 # apparently discord knows if i put my token up on github
@@ -53,8 +54,10 @@ class TriviaBot():
         # print("sendq")
         try:
             q = self.api.askq(tag)
-        except:
+        except Exception as e:
             print("Failed getting a q with tag %s" % (tag))
+            track = traceback.format_exc()
+            print(track)            
             await self.channel.send("Couldn't retrieve a question. Your parameters might be invalid. If there was a trivia run, it will be terminated.")
             self.qcount = 0
             return
