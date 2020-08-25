@@ -16,6 +16,7 @@ except:
 
 # time for qs to be answered
 TIME_LIMIT = 60
+RUN_LIMIT = 152
 
 client = discord.Client()
 
@@ -213,6 +214,11 @@ async def on_message(message):
         if qcount > 1:
             if bot.qcount > 1:
                 await message.channel.send("There is already an existing trivia run with %d question(s) remaining, !stop to stop" % (bot.qcount))    
+
+            if qcount > RUN_LIMIT:
+                await message.channel.send("%d questions!! Are you insane? That's way too many!" % (qcount))
+                return
+
             await message.channel.send("Starting trivia run with %d questions, !stop to stop" % (qcount))
 
         bot.tag = tag
