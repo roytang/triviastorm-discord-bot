@@ -2,25 +2,17 @@ import os
 import requests
 import binascii
 
-try:
-    API_TOKEN = os.environ['triviastorm.api_token']
-except:
-    API_TOKEN = os.environ['triviastorm_api_token']
-
-API_ROOT = "https://roytang.net/apps/trivia/api/v2/"
-# API_ROOT = "http://localhost:8000/api/v2/"
-
-print("triviastorm.api_token="+API_TOKEN)
-
 class ApiClient():
 
-    def __init__(self, channel_id, api_root=API_ROOT, token=API_TOKEN):
+    def __init__(self, channel_id, api_root, token):
         self.channel_id = channel_id
         self.api_root = api_root
+        print("self.api_root", api_root)
         self.headers = { 'Authorization': 'Token %s' % token }
 
     def get(self, endpoint, payload={}):
         target = self.api_root + endpoint
+        print("sending get", target, payload)
         r = requests.get(target, params=payload, headers=self.headers)
         data = r.json()
         return data
@@ -28,6 +20,7 @@ class ApiClient():
     def post(self, endpoint, payload={}):
         target = self.api_root + endpoint
         payload['channel_id'] = self.channel_id
+        print("sending post", target, payload)
         r = requests.post(target, data=payload, headers=self.headers)
         data = r.json()
         return data

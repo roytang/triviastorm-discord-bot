@@ -6,19 +6,32 @@ import urllib.request, json, urllib.parse
 import binascii
 from apiclient import ApiClient
 import traceback
+import os
+from dotenv import load_dotenv
 
-# high five for security
-# apparently discord knows if i put my token up on github
-try:
-    TOKEN = os.environ['triviastorm.token']
-except:
-    TOKEN = os.environ['triviastorm_token']
+load_dotenv()
+
+TOKEN = os.getenv('DISCORD_TOKEN')
+API_TOKEN = os.getenv('API_TOKEN')
+API_ROOT = os.getenv('API_ROOT')
+
+# print("DISCORD_TOKEN", TOKEN)
+# print(os.getenv("DISCORD_TOKEN"))
+# print(os.getenv("API_TOKEN"))
+# print(os.getenv("API_ROOT"))
+# print(os.getenv("TIME_LIMIT"))
+# print(os.getenv("RUN_LIMIT"))
+
+
 
 # time for qs to be answered
-TIME_LIMIT = 60
-RUN_LIMIT = 152
+TIME_LIMIT = int(os.getenv('TIME_LIMIT', 60))
+RUN_LIMIT = int(os.getenv('RUN_LIMIT', 100))
 
-client = discord.Client()
+intents = discord.Intents.default()
+intents.message_content = True
+
+client = discord.Client(intents=intents)
 
 def dump(obj):
    for attr in dir(obj):
@@ -38,7 +51,7 @@ class TriviaBot():
         self.last_q = None
         self.qcount = 0
         self.tag = None
-        self.api = ApiClient(channel.id)
+        self.api = ApiClient(channel.id, api_root=API_ROOT, token=API_TOKEN)
 
     async def endq(self, q=None):
         # print("endq")
@@ -161,7 +174,7 @@ async def status_task(bot, q):
 
 @client.event
 async def on_message(message):
-    #dump(message)
+    print(message.content)
 
     # we do not want the bot to reply to itself
     if message.author == client.user:
